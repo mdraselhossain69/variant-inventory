@@ -1,0 +1,24 @@
+{% comment %}https://prntscr.com/qy3wqm  First, save your variants stocks in a JS global variable in product-template.liquid
+Inventory tracking on product page {% endcomment %}
+            <div id="variant-inventory" class="{% unless current_variant.available %} hide {% endunless %}">
+              {% if current_variant.inventory_management == "shopify" %}
+              	<span class="variant-inventory-number">{{ current_variant.inventory_quantity }}</span> in local stock!
+              {% else %}
+              	This product is available.
+              {% endif %}
+            </div>
+            
+            <script>
+              window._VARIANTS = {};
+              {% for variant in product.variants %}
+              	window._VARIANTS[{{ variant.id }}] = {{ variant.inventory_quantity }}
+              {% endfor %}
+            </script>
+            {% comment %} Then, in theme.js.liquid, in productPage callback, right before "// Also Show SKU", add the following:{% endcomment %}
+            
+             if (variant.inventory_management == "shopify") {
+          var quantity = _VARIANTS[variant.id];
+          
+          jQuery('.variant-inventory-number').text(quantity > 0 ? quantity : 0);
+          
+        }
